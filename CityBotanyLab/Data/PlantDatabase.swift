@@ -1,4 +1,4 @@
-﻿//
+//
 //  PlantDatabase.swift
 //  CityBotanyLab
 //
@@ -7,11 +7,12 @@ import Foundation
 
 struct PlantDatabase {
     static let allPlants: [Plant] = [
+        // TREES
         Plant(
             name: "London Plane",
             scientificName: "Platanus x acerifolia",
             category: .tree,
-            description: "One of the most popular urban trees worldwide, known for its tolerance to pollution and ability to thrive in compacted soils.",
+            description: "One of the most popular urban trees worldwide, known for its tolerance to pollution and ability to thrive in compacted soils. Its distinctive mottled bark adds visual interest year-round.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .fullSun,
@@ -20,13 +21,13 @@ struct PlantDatabase {
             urbanBenefits: [.airPurification, .shadeCooling, .aesthetics],
             bestLocations: [.streetside, .park, .plaza],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЊі"
+            icon: "tree.fill"
         ),
         Plant(
             name: "Silver Linden",
             scientificName: "Tilia tomentosa",
             category: .tree,
-            description: "An elegant tree with heart-shaped leaves that have silvery undersides. Tolerates drought and urban conditions well.",
+            description: "An elegant tree with heart-shaped leaves that have silvery undersides. Tolerates drought and urban conditions well. Produces fragrant flowers in summer.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .adaptable,
@@ -35,13 +36,13 @@ struct PlantDatabase {
             urbanBenefits: [.shadeCooling, .wildlifeHabitat, .aesthetics],
             bestLocations: [.streetside, .park, .residential],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЊІ"
+            icon: "tree"
         ),
         Plant(
             name: "Ginkgo",
             scientificName: "Ginkgo biloba",
             category: .tree,
-            description: "An ancient species with fan-shaped leaves that turn brilliant yellow in autumn. Extremely resistant to pollution.",
+            description: "An ancient species with fan-shaped leaves that turn brilliant yellow in autumn. Extremely resistant to pollution, pests, and diseases.",
             careLevel: .low,
             waterNeeds: .low,
             sunRequirement: .fullSun,
@@ -50,13 +51,13 @@ struct PlantDatabase {
             urbanBenefits: [.airPurification, .aesthetics, .shadeCooling],
             bestLocations: [.streetside, .park, .plaza],
             plantingSeasons: [.spring],
-            icon: "рџЌ‚"
+            icon: "leaf.fill"
         ),
         Plant(
             name: "Red Maple",
             scientificName: "Acer rubrum",
             category: .tree,
-            description: "A versatile native tree with spectacular red fall color. Adapts to various soil conditions.",
+            description: "A versatile native tree with spectacular red fall color. Adapts to various soil conditions and provides excellent shade.",
             careLevel: .medium,
             waterNeeds: .moderate,
             sunRequirement: .adaptable,
@@ -65,13 +66,13 @@ struct PlantDatabase {
             urbanBenefits: [.shadeCooling, .aesthetics, .wildlifeHabitat],
             bestLocations: [.park, .residential, .streetside],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЌЃ"
+            icon: "leaf"
         ),
         Plant(
             name: "Japanese Zelkova",
             scientificName: "Zelkova serrata",
             category: .tree,
-            description: "A graceful tree with a vase-shaped crown. Highly resistant to Dutch elm disease.",
+            description: "A graceful tree with a vase-shaped crown and serrated leaves. Highly resistant to Dutch elm disease. Excellent street tree.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .fullSun,
@@ -80,13 +81,13 @@ struct PlantDatabase {
             urbanBenefits: [.shadeCooling, .aesthetics, .airPurification],
             bestLocations: [.streetside, .park, .plaza],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЊі"
+            icon: "tree.fill"
         ),
         Plant(
             name: "European Hornbeam",
             scientificName: "Carpinus betulus",
             category: .tree,
-            description: "A dense, medium-sized tree excellent for hedging and screening.",
+            description: "A dense, medium-sized tree excellent for hedging and screening. Retains bronze leaves through winter when pruned as a hedge.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .adaptable,
@@ -95,13 +96,15 @@ struct PlantDatabase {
             urbanBenefits: [.noiseReduction, .aesthetics, .wildlifeHabitat],
             bestLocations: [.highway, .residential, .park],
             plantingSeasons: [.autumn, .spring],
-            icon: "рџЊІ"
+            icon: "tree"
         ),
+        
+        // SHRUBS
         Plant(
             name: "Boxwood",
             scientificName: "Buxus sempervirens",
             category: .shrub,
-            description: "A classic evergreen shrub perfect for formal hedges and topiary.",
+            description: "A classic evergreen shrub perfect for formal hedges and topiary. Dense foliage provides year-round structure.",
             careLevel: .medium,
             waterNeeds: .moderate,
             sunRequirement: .adaptable,
@@ -110,13 +113,13 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .noiseReduction, .airPurification],
             bestLocations: [.plaza, .residential, .park],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЊї"
+            icon: "leaf.circle.fill"
         ),
         Plant(
             name: "Hydrangea",
             scientificName: "Hydrangea macrophylla",
             category: .shrub,
-            description: "A flowering shrub famous for large, showy blooms that can be blue or pink.",
+            description: "A flowering shrub famous for large, showy blooms that can be blue or pink depending on soil pH.",
             careLevel: .medium,
             waterNeeds: .high,
             sunRequirement: .partialShade,
@@ -125,13 +128,13 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .wildlifeHabitat],
             bestLocations: [.park, .residential, .plaza],
             plantingSeasons: [.spring],
-            icon: "рџ’ђ"
+            icon: "camera.macro"
         ),
         Plant(
             name: "Privet",
             scientificName: "Ligustrum vulgare",
             category: .shrub,
-            description: "A fast-growing, hardy shrub ideal for hedging.",
+            description: "A fast-growing, hardy shrub ideal for hedging. Semi-evergreen in mild climates.",
             careLevel: .low,
             waterNeeds: .low,
             sunRequirement: .adaptable,
@@ -140,13 +143,13 @@ struct PlantDatabase {
             urbanBenefits: [.noiseReduction, .airPurification, .wildlifeHabitat],
             bestLocations: [.highway, .residential, .streetside],
             plantingSeasons: [.autumn, .spring],
-            icon: "рџЊї"
+            icon: "leaf.circle"
         ),
         Plant(
             name: "Rose of Sharon",
             scientificName: "Hibiscus syriacus",
             category: .shrub,
-            description: "A late-summer flowering shrub with tropical-looking blooms.",
+            description: "A late-summer flowering shrub with tropical-looking blooms. Very heat and drought tolerant once established.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .fullSun,
@@ -155,13 +158,13 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .wildlifeHabitat],
             bestLocations: [.park, .residential, .plaza],
             plantingSeasons: [.spring],
-            icon: "рџЊє"
+            icon: "camera.macro"
         ),
         Plant(
             name: "Cotoneaster",
             scientificName: "Cotoneaster horizontalis",
             category: .shrub,
-            description: "A spreading shrub with distinctive herringbone branching pattern.",
+            description: "A spreading shrub with distinctive herringbone branching pattern. Produces red berries in autumn.",
             careLevel: .low,
             waterNeeds: .low,
             sunRequirement: .adaptable,
@@ -170,13 +173,15 @@ struct PlantDatabase {
             urbanBenefits: [.erosionControl, .wildlifeHabitat, .aesthetics],
             bestLocations: [.highway, .streetside, .residential],
             plantingSeasons: [.autumn, .spring],
-            icon: "рџЌ’"
+            icon: "circle.fill"
         ),
+        
+        // GRASSES
         Plant(
             name: "Tall Fescue",
             scientificName: "Festuca arundinacea",
             category: .grass,
-            description: "A cool-season grass with deep roots and excellent drought tolerance.",
+            description: "A cool-season grass with deep roots and excellent drought tolerance. Stays green year-round in moderate climates.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .adaptable,
@@ -185,13 +190,13 @@ struct PlantDatabase {
             urbanBenefits: [.erosionControl, .stormwaterManagement, .aesthetics],
             bestLocations: [.park, .streetside, .bikePath],
             plantingSeasons: [.autumn, .spring],
-            icon: "рџЊѕ"
+            icon: "wind"
         ),
         Plant(
             name: "Blue Fescue",
             scientificName: "Festuca glauca",
             category: .grass,
-            description: "An ornamental grass with striking blue-gray foliage.",
+            description: "An ornamental grass with striking blue-gray foliage. Forms neat, rounded tufts. Very drought tolerant.",
             careLevel: .low,
             waterNeeds: .low,
             sunRequirement: .fullSun,
@@ -200,13 +205,13 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .erosionControl],
             bestLocations: [.plaza, .streetside, .residential],
             plantingSeasons: [.spring],
-            icon: "рџЊѕ"
+            icon: "wind"
         ),
         Plant(
             name: "Fountain Grass",
             scientificName: "Pennisetum alopecuroides",
             category: .grass,
-            description: "An ornamental grass with graceful, arching foliage and fuzzy flower spikes.",
+            description: "An ornamental grass with graceful, arching foliage and fuzzy flower spikes. Adds movement and texture.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .fullSun,
@@ -215,13 +220,15 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .erosionControl, .stormwaterManagement],
             bestLocations: [.park, .plaza, .residential],
             plantingSeasons: [.spring],
-            icon: "рџЊї"
+            icon: "leaf.arrow.triangle.circlepath"
         ),
+        
+        // FLOWERS
         Plant(
             name: "Lavender",
             scientificName: "Lavandula angustifolia",
             category: .flower,
-            description: "An aromatic perennial with silvery foliage and purple flower spikes.",
+            description: "An aromatic perennial with silvery foliage and purple flower spikes. Extremely drought tolerant.",
             careLevel: .low,
             waterNeeds: .low,
             sunRequirement: .fullSun,
@@ -230,13 +237,13 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .wildlifeHabitat, .airPurification],
             bestLocations: [.plaza, .residential, .bikePath],
             plantingSeasons: [.spring],
-            icon: "рџ’њ"
+            icon: "camera.macro"
         ),
         Plant(
             name: "Black-Eyed Susan",
             scientificName: "Rudbeckia hirta",
             category: .flower,
-            description: "A cheerful native wildflower with golden petals and dark centers.",
+            description: "A cheerful native wildflower with golden petals and dark centers. Long blooming season.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .fullSun,
@@ -245,13 +252,13 @@ struct PlantDatabase {
             urbanBenefits: [.wildlifeHabitat, .aesthetics],
             bestLocations: [.park, .bikePath, .highway],
             plantingSeasons: [.spring],
-            icon: "рџЊ»"
+            icon: "sun.max.fill"
         ),
         Plant(
             name: "Sedum",
             scientificName: "Sedum spectabile",
             category: .flower,
-            description: "A succulent perennial with thick, fleshy leaves. Perfect for green roofs.",
+            description: "A succulent perennial with thick, fleshy leaves. Extremely drought tolerant. Perfect for green roofs.",
             careLevel: .low,
             waterNeeds: .low,
             sunRequirement: .fullSun,
@@ -260,13 +267,13 @@ struct PlantDatabase {
             urbanBenefits: [.stormwaterManagement, .aesthetics, .wildlifeHabitat],
             bestLocations: [.rooftop, .plaza, .verticalGarden],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЊё"
+            icon: "sparkles"
         ),
         Plant(
             name: "Echinacea",
             scientificName: "Echinacea purpurea",
             category: .flower,
-            description: "A native perennial with distinctive cone-shaped flowers.",
+            description: "A native perennial with distinctive cone-shaped flowers. Drought tolerant and attracts butterflies.",
             careLevel: .low,
             waterNeeds: .low,
             sunRequirement: .fullSun,
@@ -275,13 +282,13 @@ struct PlantDatabase {
             urbanBenefits: [.wildlifeHabitat, .aesthetics],
             bestLocations: [.park, .residential, .bikePath],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЊё"
+            icon: "camera.macro"
         ),
         Plant(
             name: "Daylily",
             scientificName: "Hemerocallis",
             category: .flower,
-            description: "A virtually indestructible perennial with grass-like foliage and large flowers.",
+            description: "A virtually indestructible perennial with grass-like foliage and large flowers. Available in many colors.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .adaptable,
@@ -290,13 +297,15 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .erosionControl],
             bestLocations: [.streetside, .residential, .highway],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЊ·"
+            icon: "camera.macro"
         ),
+        
+        // VINES
         Plant(
             name: "Boston Ivy",
             scientificName: "Parthenocissus tricuspidata",
             category: .vine,
-            description: "A self-clinging vine that covers walls with dense, glossy foliage.",
+            description: "A self-clinging vine that covers walls with dense, glossy foliage. Brilliant red fall color.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .adaptable,
@@ -305,13 +314,13 @@ struct PlantDatabase {
             urbanBenefits: [.airPurification, .aesthetics, .shadeCooling],
             bestLocations: [.verticalGarden, .residential, .park],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЌѓ"
+            icon: "arrow.up.right"
         ),
         Plant(
             name: "Climbing Hydrangea",
             scientificName: "Hydrangea anomala petiolaris",
             category: .vine,
-            description: "A self-clinging vine with large white flower clusters in summer.",
+            description: "A self-clinging vine with large white flower clusters in summer. Tolerates shade well.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .partialShade,
@@ -320,13 +329,13 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .wildlifeHabitat],
             bestLocations: [.verticalGarden, .park, .residential],
             plantingSeasons: [.spring],
-            icon: "рџЊё"
+            icon: "camera.macro"
         ),
         Plant(
             name: "Virginia Creeper",
             scientificName: "Parthenocissus quinquefolia",
             category: .vine,
-            description: "A vigorous native vine with five-parted leaves that turn brilliant red in fall.",
+            description: "A vigorous native vine with five-parted leaves that turn brilliant red in fall. Birds love the berries.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .adaptable,
@@ -335,13 +344,15 @@ struct PlantDatabase {
             urbanBenefits: [.wildlifeHabitat, .aesthetics, .shadeCooling],
             bestLocations: [.highway, .verticalGarden, .park],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџЌ‡"
+            icon: "arrow.up.forward"
         ),
+        
+        // GROUND COVERS
         Plant(
             name: "Creeping Thyme",
             scientificName: "Thymus serpyllum",
             category: .groundCover,
-            description: "A fragrant, low-growing ground cover that tolerates light foot traffic.",
+            description: "A fragrant, low-growing ground cover that tolerates light foot traffic. Produces tiny purple flowers.",
             careLevel: .low,
             waterNeeds: .low,
             sunRequirement: .fullSun,
@@ -350,13 +361,13 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .wildlifeHabitat, .erosionControl],
             bestLocations: [.plaza, .bikePath, .residential],
             plantingSeasons: [.spring],
-            icon: "рџЊї"
+            icon: "leaf.fill"
         ),
         Plant(
             name: "Pachysandra",
             scientificName: "Pachysandra terminalis",
             category: .groundCover,
-            description: "An evergreen ground cover that thrives in shade.",
+            description: "An evergreen ground cover that thrives in shade. Forms a dense carpet of glossy leaves.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .fullShade,
@@ -365,13 +376,13 @@ struct PlantDatabase {
             urbanBenefits: [.erosionControl, .aesthetics],
             bestLocations: [.park, .residential, .streetside],
             plantingSeasons: [.spring, .autumn],
-            icon: "впёЏ"
+            icon: "leaf.circle.fill"
         ),
         Plant(
             name: "Ajuga",
             scientificName: "Ajuga reptans",
             category: .groundCover,
-            description: "A fast-spreading ground cover with bronze or variegated foliage.",
+            description: "A fast-spreading ground cover with bronze or variegated foliage. Blue flower spikes in spring.",
             careLevel: .low,
             waterNeeds: .moderate,
             sunRequirement: .partialShade,
@@ -380,7 +391,7 @@ struct PlantDatabase {
             urbanBenefits: [.aesthetics, .erosionControl, .wildlifeHabitat],
             bestLocations: [.park, .residential, .streetside],
             plantingSeasons: [.spring, .autumn],
-            icon: "рџ’™"
+            icon: "drop.fill"
         )
     ]
 }

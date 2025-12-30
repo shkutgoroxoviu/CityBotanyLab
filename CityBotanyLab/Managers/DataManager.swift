@@ -1,4 +1,4 @@
-﻿//
+//
 //  DataManager.swift
 //  CityBotanyLab
 //
@@ -21,30 +21,25 @@ class DataManager: ObservableObject {
         loadData()
     }
     
-    private func loadData() {
-        loadProjects()
-        loadJournalEntries()
-        loadFavorites()
-    }
+    // MARK: - Data Persistence
     
-    private func loadProjects() {
+    private func loadData() {
+        // Load projects
         if let data = UserDefaults.standard.data(forKey: projectsKey),
            let decoded = try? JSONDecoder().decode([Project].self, from: data) {
             projects = decoded
         }
-    }
-    
-    private func loadJournalEntries() {
+        
+        // Load journal entries
         if let data = UserDefaults.standard.data(forKey: journalKey),
            let decoded = try? JSONDecoder().decode([JournalEntry].self, from: data) {
             journalEntries = decoded
         }
-    }
-    
-    private func loadFavorites() {
+        
+        // Load favorites
         if let data = UserDefaults.standard.data(forKey: favoritesKey),
-           let decoded = try? JSONDecoder().decode(Set<UUID>.self, from: data) {
-            favoritePlantIds = decoded
+           let decoded = try? JSONDecoder().decode([UUID].self, from: data) {
+            favoritePlantIds = Set(decoded)
         }
     }
     
@@ -61,10 +56,12 @@ class DataManager: ObservableObject {
     }
     
     private func saveFavorites() {
-        if let encoded = try? JSONEncoder().encode(favoritePlantIds) {
+        if let encoded = try? JSONEncoder().encode(Array(favoritePlantIds)) {
             UserDefaults.standard.set(encoded, forKey: favoritesKey)
         }
     }
+    
+    // MARK: - Projects CRUD
     
     func addProject(_ project: Project) {
         projects.append(project)
@@ -83,21 +80,12 @@ class DataManager: ObservableObject {
         saveProjects()
     }
     
-    func deleteProject(at offsets: IndexSet) {
-        projects.remove(atOffsets: offsets)
-        saveProjects()
-    }
+    // MARK: - Journal CRUD
     
     func addJournalEntry(_ entry: JournalEntry) {
-        journalEntries.insert(entry, at: 0)
+        journalEntries.append(entry)
+        journalEntries.sort { $0.date > $1.date }
         saveJournalEntries()
-    }
-    
-    func updateJournalEntry(_ entry: JournalEntry) {
-        if let index = journalEntries.firstIndex(where: { $0.id == entry.id }) {
-            journalEntries[index] = entry
-            saveJournalEntries()
-        }
     }
     
     func deleteJournalEntry(_ entry: JournalEntry) {
@@ -105,41 +93,18 @@ class DataManager: ObservableObject {
         saveJournalEntries()
     }
     
-    func deleteJournalEntry(at offsets: IndexSet) {
-        journalEntries.remove(atOffsets: offsets)
-        saveJournalEntries()
+    // MARK: - Favorites
+    
+    func isFavorite(_ plant: Plant) -> Bool {
+        favoritePlantIds.contains(plant.id)
     }
     
-    func toggleFavorite(plantId: UUID) {
-        if favoritePlantIds.contains(plantId) {
-            favoritePlantIds.remove(plantId)
+    func toggleFavorite(_ plant: Plant) {
+        if favoritePlantIds.contains(plant.id) {
+            favoritePlantIds.remove(plant.id)
         } else {
-            favoritePlantIds.insert(plantId)
+            favoritePlantIds.insert(plant.id)
         }
         saveFavorites()
-    }
-    
-    func isFavorite(plantId: UUID) -> Bool {
-        favoritePlantIds.contains(plantId)
-    }
-    
-    var favoritePlants: [Plant] {
-        plants.filter { favoritePlantIds.contains($0.id) }
-    }
-    
-    func plant(for id: UUID) -> Plant? {
-        plants.first { $0.id == id }
-    }
-    
-    var sortedJournalEntries: [JournalEntry] {
-        journalEntries.sorted { $0.date > $1.date }
-    }
-    
-    var recentProjects: [Project] {
-        Array(projects.sorted { $0.createdDate > $1.createdDate }.prefix(5))
-    }
-    
-    var activeProjects: [Project] {
-        projects.filter { $0.status == .inProgress || $0.status == .planning }
     }
 }

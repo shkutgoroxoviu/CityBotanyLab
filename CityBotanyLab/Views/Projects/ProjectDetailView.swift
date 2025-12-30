@@ -1,4 +1,4 @@
-﻿//
+//
 //  ProjectDetailView.swift
 //  CityBotanyLab
 //
@@ -6,159 +6,357 @@
 import SwiftUI
 
 struct ProjectDetailView: View {
-    @State var project: Project
     @EnvironmentObject var dataManager: DataManager
     @Environment(\.dismiss) var dismiss
-    @State private var showingEditSheet = false
-    @State private var showingDeleteAlert = false
+    @State var project: Project
+    @State private var showingAddPlant = false
+    @State private var showingEditStatus = false
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
-                    VStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 24) {
+                    // Header
+                    VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Text(project.status.icon).font(.system(size: 40))
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(project.name).font(.system(size: 24, weight: .bold)).foregroundColor(AppTheme.textPrimary)
-                                Text(project.locationType.rawValue).font(.system(size: 15)).foregroundColor(AppTheme.textSecondary)
-                            }
+                            Text(project.name)
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(AppTheme.textPrimary)
+                            
                             Spacer()
-                        }
-                        HStack(spacing: 8) {
-                            ForEach(ProjectStatus.allCases, id: \.self) { status in
-                                Button { withAnimation { project.status = status; dataManager.updateProject(project) } } label: {
-                                    Text(status.rawValue).font(.system(size: 13, weight: .medium))
-                                        .foregroundColor(project.status == status ? .white : AppTheme.textSecondary)
-                                        .padding(.horizontal, 12).padding(.vertical, 8)
-                                        .background(project.status == status ? statusColor(for: status) : Color.gray.opacity(0.1)).cornerRadius(10)
-                                }
+                            
+                            Button(action: { showingEditStatus = true }) {
+                                StatusBadge(status: project.status)
                             }
                         }
-                    }.padding(20).cardStyle().padding(.horizontal, 16)
+                        
+                        Text(project.locationType.rawValue)
+                            .font(.subheadline)
+                            .foregroundColor(AppTheme.textSecondary)
+                    }
+                    .padding(.horizontal, 16)
                     
+                    // Description
                     if !project.projectDescription.isEmpty {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("Description").font(.system(size: 16, weight: .bold)).foregroundColor(AppTheme.textPrimary)
-                            Text(project.projectDescription).font(.system(size: 15)).foregroundColor(AppTheme.textSecondary).lineSpacing(4)
-                        }.frame(maxWidth: .infinity, alignment: .leading).padding(20).cardStyle().padding(.horizontal, 16)
+                        Text(project.projectDescription)
+                            .font(.body)
+                            .foregroundColor(AppTheme.textSecondary)
+                            .padding(.horizontal, 16)
                     }
                     
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Project Details").font(.system(size: 16, weight: .bold)).foregroundColor(AppTheme.textPrimary)
-                        HStack(spacing: 12) {
-                            DetailTile(icon: "ruler", title: "Area", value: "\(Int(project.area)) mВІ", color: AppTheme.primaryGreen)
-                            DetailTile(icon: "leaf.fill", title: "Plants", value: "\(project.plants.count)", color: AppTheme.accentPink)
-                        }
-                        HStack(spacing: 12) {
-                            DetailTile(icon: "calendar", title: "Created", value: project.createdDate.formatted(date: .abbreviated, time: .omitted), color: .orange)
-                            if let targetDate = project.targetCompletionDate {
-                                DetailTile(icon: "flag.fill", title: "Target", value: targetDate.formatted(date: .abbreviated, time: .omitted), color: .blue)
-                            }
-                        }
-                    }.padding(20).cardStyle().padding(.horizontal, 16)
+                    // Stats
+                    HStack(spacing: 16) {
+                        StatCard(title: "Area", value: "\(Int(project.area))", unit: "sqm", icon: "square.dashed")
+                        StatCard(title: "Plants", value: "\(project.plants.count)", unit: "types", icon: "leaf")
+                        StatCard(title: "Total", value: "\(project.plants.reduce(0) { $0 + $1.quantity })", unit: "units", icon: "number")
+                    }
+                    .padding(.horizontal, 16)
                     
-                    if !project.plants.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Plants (\(totalPlantCount))").font(.system(size: 16, weight: .bold)).foregroundColor(AppTheme.textPrimary)
-                            ForEach(project.plants.indices, id: \.self) { index in
-                                let pp = project.plants[index]
-                                HStack {
-                                    if let plant = dataManager.plant(for: pp.plantId) { Text(plant.icon).font(.system(size: 24)) }
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(pp.plantName).font(.system(size: 15, weight: .medium)).foregroundColor(AppTheme.textPrimary)
-                                        Text("Qty: \(pp.quantity)").font(.system(size: 13)).foregroundColor(AppTheme.textSecondary)
-                                    }
-                                    Spacer()
-                                    Button {
-                                        withAnimation {
-                                            project.plants[index].isPlanted.toggle()
-                                            project.plants[index].plantedDate = project.plants[index].isPlanted ? Date() : nil
-                                            dataManager.updateProject(project)
-                                        }
-                                    } label: {
-                                        Image(systemName: pp.isPlanted ? "checkmark.circle.fill" : "circle").font(.system(size: 24))
-                                            .foregroundColor(pp.isPlanted ? AppTheme.primaryGreen : AppTheme.textSecondary.opacity(0.5))
-                                    }
-                                }.padding(.vertical, 8)
-                                if index < project.plants.count - 1 { Divider() }
+                    // Timeline
+                    if let targetDate = project.targetCompletionDate {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Timeline")
+                                .font(.headline)
+                                .foregroundColor(AppTheme.textPrimary)
+                            
+                            HStack {
+                                Label("Created", systemImage: "calendar")
+                                Spacer()
+                                Text(project.createdDate.formatted(date: .abbreviated, time: .omitted))
                             }
-                        }.padding(20).cardStyle().padding(.horizontal, 16)
+                            .font(.subheadline)
+                            .foregroundColor(AppTheme.textSecondary)
+                            
+                            HStack {
+                                Label("Target", systemImage: "flag.fill")
+                                Spacer()
+                                Text(targetDate.formatted(date: .abbreviated, time: .omitted))
+                            }
+                            .font(.subheadline)
+                            .foregroundColor(AppTheme.textSecondary)
+                        }
+                        .padding(16)
+                        .cardStyle()
+                        .padding(.horizontal, 16)
                     }
                     
-                    Button { showingDeleteAlert = true } label: {
-                        HStack { Image(systemName: "trash"); Text("Delete Project") }
-                            .font(.system(size: 16, weight: .medium)).foregroundColor(.red)
-                            .frame(maxWidth: .infinity).padding(.vertical, 14).background(Color.red.opacity(0.1)).cornerRadius(12)
-                    }.padding(.horizontal, 16).padding(.bottom, 30)
-                }.padding(.top, 16)
+                    // Plants
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Plants")
+                                .font(.headline)
+                                .foregroundColor(AppTheme.textPrimary)
+                            
+                            Spacer()
+                            
+                            Button(action: { showingAddPlant = true }) {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundColor(AppTheme.primaryGreen)
+                            }
+                        }
+                        
+                        if project.plants.isEmpty {
+                            Text("No plants added yet")
+                                .font(.subheadline)
+                                .foregroundColor(AppTheme.textSecondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 24)
+                        } else {
+                            ForEach(project.plants) { plantEntry in
+                                ProjectPlantRow(
+                                    plantEntry: plantEntry,
+                                    onDelete: {
+                                        removePlant(plantEntry)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    
+                    // Notes
+                    if !project.notes.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Notes")
+                                .font(.headline)
+                                .foregroundColor(AppTheme.textPrimary)
+                            
+                            Text(project.notes)
+                                .font(.body)
+                                .foregroundColor(AppTheme.textSecondary)
+                        }
+                        .padding(.horizontal, 16)
+                    }
+                    
+                    // Delete Button
+                    Button(action: deleteProject) {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text("Delete Project")
+                        }
+                        .foregroundColor(.red)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 32)
+                }
+                .padding(.top, 16)
             }
-            .background(AppTheme.background).navigationBarTitleDisplayMode(.inline)
+            .background(AppTheme.background)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button { dismiss() } label: { Image(systemName: "xmark.circle.fill").font(.system(size: 24)).foregroundColor(AppTheme.textSecondary.opacity(0.5)) }
-                }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { showingEditSheet = true } label: { Text("Edit").font(.system(size: 16, weight: .medium)).foregroundColor(AppTheme.primaryGreen) }
+                    Button("Done") { dismiss() }
                 }
             }
-            .alert("Delete Project?", isPresented: $showingDeleteAlert) {
+            .sheet(isPresented: $showingAddPlant) {
+                AddPlantToProjectView(project: $project, onSave: saveProject)
+            }
+            .confirmationDialog("Update Status", isPresented: $showingEditStatus) {
+                ForEach(ProjectStatus.allCases, id: \.self) { status in
+                    Button(status.rawValue) {
+                        project.status = status
+                        saveProject()
+                    }
+                }
                 Button("Cancel", role: .cancel) {}
-                Button("Delete", role: .destructive) { dataManager.deleteProject(project); dismiss() }
-            } message: { Text("This action cannot be undone.") }
-            .sheet(isPresented: $showingEditSheet) { EditProjectView(project: $project) }
+            }
         }
     }
     
-    private var totalPlantCount: Int { project.plants.reduce(0) { $0 + $1.quantity } }
-    private func statusColor(for status: ProjectStatus) -> Color {
-        switch status { case .planning: return .orange; case .inProgress: return AppTheme.primaryGreen; case .completed: return .green; case .onHold: return AppTheme.textSecondary }
+    private func removePlant(_ plantEntry: ProjectPlant) {
+        project.plants.removeAll { $0.id == plantEntry.id }
+        saveProject()
+    }
+    
+    private func saveProject() {
+        dataManager.updateProject(project)
+    }
+    
+    private func deleteProject() {
+        dataManager.deleteProject(project)
+        dismiss()
     }
 }
 
-struct DetailTile: View {
-    let icon: String; let title: String; let value: String; let color: Color
+struct StatCard: View {
+    let title: String
+    let value: String
+    let unit: String
+    let icon: String
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(AppTheme.primaryGreen)
+            
+            Text(value)
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(AppTheme.textPrimary)
+            
+            Text(unit)
+                .font(.caption)
+                .foregroundColor(AppTheme.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+        .cardStyle()
+    }
+}
+
+struct ProjectPlantRow: View {
+    let plantEntry: ProjectPlant
+    let onDelete: () -> Void
+    
+    var plant: Plant? {
+        PlantDatabase.allPlants.first { $0.id == plantEntry.plantId }
+    }
+    
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: icon).font(.system(size: 18)).foregroundColor(color).frame(width: 36, height: 36).background(color.opacity(0.15)).cornerRadius(10)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.system(size: 12)).foregroundColor(AppTheme.textSecondary)
-                Text(value).font(.system(size: 15, weight: .semibold)).foregroundColor(AppTheme.textPrimary)
+            if let plant = plant {
+                Image(systemName: plant.icon)
+                    .font(.title3)
+                    .foregroundColor(AppTheme.primaryGreen)
+                    .frame(width: 40)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(plant.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(AppTheme.textPrimary)
+                    
+                    Text("Qty: \(plantEntry.quantity)")
+                        .font(.caption)
+                        .foregroundColor(AppTheme.textSecondary)
+                }
             }
+            
             Spacer()
-        }.padding(12).background(Color.gray.opacity(0.05)).cornerRadius(12)
+            
+            Button(action: onDelete) {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(AppTheme.textSecondary)
+            }
+        }
+        .padding(12)
+        .background(AppTheme.cardBackground.opacity(0.5))
+        .cornerRadius(8)
     }
 }
 
-struct EditProjectView: View {
+struct AddPlantToProjectView: View {
     @Binding var project: Project
-    @EnvironmentObject var dataManager: DataManager
+    let onSave: () -> Void
     @Environment(\.dismiss) var dismiss
-    @State private var name = ""; @State private var projectDescription = ""; @State private var notes = ""; @State private var area = ""; @State private var locationType: UrbanLocation = .park
+    
+    @State private var selectedPlant: Plant?
+    @State private var quantity = 1
+    @State private var searchText = ""
+    
+    var filteredPlants: [Plant] {
+        if searchText.isEmpty {
+            return PlantDatabase.allPlants
+        }
+        return PlantDatabase.allPlants.filter {
+            $0.name.localizedCaseInsensitiveContains(searchText)
+        }
+    }
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Project Info") {
-                    TextField("Project Name", text: $name)
-                    TextField("Description", text: $projectDescription, axis: .vertical).lineLimit(3...6)
-                    Picker("Location Type", selection: $locationType) { ForEach(UrbanLocation.allCases, id: \.self) { Text($0.rawValue).tag($0) } }
-                    HStack { Text("Area"); Spacer(); TextField("0", text: $area).keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 80); Text("mВІ").foregroundColor(AppTheme.textSecondary) }
+            VStack(spacing: 0) {
+                if let plant = selectedPlant {
+                    // Selected plant
+                    VStack(spacing: 16) {
+                        HStack(spacing: 12) {
+                            Image(systemName: plant.icon)
+                                .font(.title)
+                                .foregroundColor(AppTheme.primaryGreen)
+                            
+                            VStack(alignment: .leading) {
+                                Text(plant.name)
+                                    .font(.headline)
+                                Text(plant.scientificName)
+                                    .font(.caption)
+                                    .foregroundColor(AppTheme.textSecondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Button(action: { selectedPlant = nil }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(AppTheme.textSecondary)
+                            }
+                        }
+                        .padding()
+                        .cardStyle()
+                        
+                        Stepper("Quantity: \(quantity)", value: $quantity, in: 1...1000)
+                            .padding()
+                    }
+                    .padding()
+                    
+                    Spacer()
+                } else {
+                    // Plant picker
+                    List(filteredPlants) { plant in
+                        Button(action: {
+                            selectedPlant = plant
+                        }) {
+                            HStack(spacing: 12) {
+                                Image(systemName: plant.icon)
+                                    .foregroundColor(AppTheme.primaryGreen)
+                                
+                                VStack(alignment: .leading) {
+                                    Text(plant.name)
+                                        .foregroundColor(AppTheme.textPrimary)
+                                    Text(plant.category.rawValue)
+                                        .font(.caption)
+                                        .foregroundColor(AppTheme.textSecondary)
+                                }
+                            }
+                        }
+                    }
+                    .searchable(text: $searchText, prompt: "Search plants...")
                 }
-                Section("Notes") { TextField("Additional notes...", text: $notes, axis: .vertical).lineLimit(4...8) }
             }
-            .onAppear { name = project.name; projectDescription = project.projectDescription; notes = project.notes; area = String(Int(project.area)); locationType = project.locationType }
-            .navigationTitle("Edit Project").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Add Plant")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) { Button("Cancel") { dismiss() } }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        project.name = name; project.projectDescription = projectDescription; project.notes = notes
-                        project.area = Double(area) ?? 0; project.locationType = locationType
-                        dataManager.updateProject(project); dismiss()
-                    }.font(.system(size: 16, weight: .semibold)).foregroundColor(AppTheme.primaryGreen)
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add") {
+                        if let plant = selectedPlant {
+                            let projectPlant = ProjectPlant(plantId: plant.id, quantity: quantity)
+                            project.plants.append(projectPlant)
+                            onSave()
+                            dismiss()
+                        }
+                    }
+                    .disabled(selectedPlant == nil)
                 }
             }
         }
     }
+}
+
+#Preview {
+    ProjectDetailView(project: Project(
+        name: "Central Park Renovation",
+        projectDescription: "Renovating the east side gardens",
+        locationType: .park,
+        area: 500,
+        plants: [],
+        targetCompletionDate: Date(),
+        status: .planning,
+        notes: "Focus on native species"
+    ))
+    .environmentObject(DataManager())
 }

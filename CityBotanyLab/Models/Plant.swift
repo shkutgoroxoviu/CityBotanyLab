@@ -1,4 +1,4 @@
-﻿//
+//
 //  Plant.swift
 //  CityBotanyLab
 //
@@ -64,12 +64,12 @@ enum PlantCategory: String, Codable, CaseIterable {
     
     var icon: String {
         switch self {
-        case .tree: return "рџЊі"
-        case .shrub: return "рџЊї"
-        case .grass: return "рџЊѕ"
-        case .flower: return "рџЊё"
-        case .vine: return "рџЊ±"
-        case .groundCover: return "впёЏ"
+        case .tree: return "tree"
+        case .shrub: return "leaf"
+        case .grass: return "wind"
+        case .flower: return "camera.macro"
+        case .vine: return "arrow.up.right"
+        case .groundCover: return "leaf.fill"
         }
     }
 }
@@ -78,14 +78,6 @@ enum CareLevel: String, Codable, CaseIterable {
     case low = "Low"
     case medium = "Medium"
     case high = "High"
-    
-    var color: String {
-        switch self {
-        case .low: return "green"
-        case .medium: return "orange"
-        case .high: return "red"
-        }
-    }
 }
 
 enum WaterNeeds: String, Codable, CaseIterable {

@@ -1,4 +1,4 @@
-﻿//
+//
 //  CatalogView.swift
 //  CityBotanyLab
 //
@@ -16,48 +16,90 @@ struct CatalogView: View {
     
     var filteredPlants: [Plant] {
         var plants = dataManager.plants
-        if !searchText.isEmpty {
-            plants = plants.filter { $0.name.localizedCaseInsensitiveContains(searchText) || $0.scientificName.localizedCaseInsensitiveContains(searchText) }
+        
+        if let category = selectedCategory {
+            plants = plants.filter { $0.category == category }
         }
-        if let category = selectedCategory { plants = plants.filter { $0.category == category } }
-        if let careLevel = selectedCareLevel { plants = plants.filter { $0.careLevel == careLevel } }
-        if let sunRequirement = selectedSunRequirement { plants = plants.filter { $0.sunRequirement == sunRequirement } }
+        
+        if let careLevel = selectedCareLevel {
+            plants = plants.filter { $0.careLevel == careLevel }
+        }
+        
+        if let sunReq = selectedSunRequirement {
+            plants = plants.filter { $0.sunRequirement == sunReq }
+        }
+        
+        if !searchText.isEmpty {
+            plants = plants.filter {
+                $0.name.localizedCaseInsensitiveContains(searchText) ||
+                $0.scientificName.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        
         return plants
     }
     
     var body: some View {
         NavigationStack {
             ZStack {
-                AppTheme.background.ignoresSafeArea()
+                AppTheme.background
+                    .ignoresSafeArea()
+                
                 VStack(spacing: 0) {
+                    // Category filter
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            CategoryChip(title: "All", icon: "рџЊЌ", isSelected: selectedCategory == nil) {
-                                withAnimation { selectedCategory = nil }
-                            }
+                        HStack(spacing: 12) {
+                            CategoryChip(
+                                title: "All",
+                                isSelected: selectedCategory == nil,
+                                action: { selectedCategory = nil }
+                            )
+                            
                             ForEach(PlantCategory.allCases, id: \.self) { category in
-                                CategoryChip(title: category.rawValue, icon: category.icon, isSelected: selectedCategory == category) {
-                                    withAnimation { selectedCategory = category }
-                                }
+                                CategoryChip(
+                                    title: category.rawValue,
+                                    icon: category.icon,
+                                    isSelected: selectedCategory == category,
+                                    action: { selectedCategory = category }
+                                )
                             }
-                        }.padding(.horizontal, 16)
-                    }.padding(.vertical, 12)
-                    
-                    if selectedCareLevel != nil || selectedSunRequirement != nil {
-                        HStack {
-                            Text("Filters active").font(.system(size: 13, weight: .medium)).foregroundColor(AppTheme.accentPink)
-                            Spacer()
-                            Button("Clear all") { withAnimation { selectedCareLevel = nil; selectedSunRequirement = nil } }
-                                .font(.system(size: 13, weight: .medium)).foregroundColor(AppTheme.primaryGreen)
-                        }.padding(.horizontal, 16).padding(.bottom, 8)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
                     }
                     
+                    // Active filters indicator
+                    if selectedCareLevel != nil || selectedSunRequirement != nil {
+                        HStack {
+                            Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                                .foregroundColor(AppTheme.accentPink)
+                            Text("Filters active")
+                                .font(.caption)
+                                .foregroundColor(AppTheme.textSecondary)
+                            Spacer()
+                            Button("Clear") {
+                                selectedCareLevel = nil
+                                selectedSunRequirement = nil
+                            }
+                            .font(.caption)
+                            .foregroundColor(AppTheme.accentPink)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 8)
+                    }
+                    
+                    // Plants list
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(filteredPlants) { plant in
-                                PlantCard(plant: plant).onTapGesture { selectedPlant = plant }
+                                PlantCard(plant: plant)
+                                    .onTapGesture {
+                                        selectedPlant = plant
+                                    }
                             }
-                        }.padding(.horizontal, 16).padding(.bottom, 20)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 100)
                     }
                 }
             }
@@ -65,28 +107,51 @@ struct CatalogView: View {
             .searchable(text: $searchText, prompt: "Search plants...")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { showingFilters = true } label: {
-                        Image(systemName: "slider.horizontal.3").foregroundColor(AppTheme.primaryGreen)
+                    Button(action: { showingFilters = true }) {
+                        Image(systemName: "slider.horizontal.3")
+                            .foregroundColor(AppTheme.primaryGreen)
                     }
                 }
             }
-            .sheet(item: $selectedPlant) { plant in PlantDetailView(plant: plant) }
+            .sheet(item: $selectedPlant) { plant in
+                PlantDetailView(plant: plant)
+            }
             .sheet(isPresented: $showingFilters) {
-                FilterView(selectedCareLevel: $selectedCareLevel, selectedSunRequirement: $selectedSunRequirement).presentationDetents([.medium])
+                FilterView(
+                    selectedCareLevel: $selectedCareLevel,
+                    selectedSunRequirement: $selectedSunRequirement
+                )
             }
         }
     }
 }
 
 struct CategoryChip: View {
-    let title: String; let icon: String; let isSelected: Bool; let action: () -> Void
+    let title: String
+    var icon: String?
+    let isSelected: Bool
+    let action: () -> Void
+    
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) { Text(icon).font(.system(size: 14)); Text(title).font(.system(size: 14, weight: .medium)) }
-                .foregroundColor(isSelected ? .white : AppTheme.textPrimary)
-                .padding(.horizontal, 14).padding(.vertical, 10)
-                .background(isSelected ? AppTheme.primaryGreen : Color.white)
-                .cornerRadius(20).shadow(color: AppTheme.darkGreen.opacity(0.08), radius: 4, x: 0, y: 2)
+            HStack(spacing: 6) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.caption)
+                }
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(isSelected ? AppTheme.primaryGreen : AppTheme.cardBackground)
+            .foregroundColor(isSelected ? .white : AppTheme.textPrimary)
+            .cornerRadius(20)
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(isSelected ? Color.clear : AppTheme.textSecondary.opacity(0.2), lineWidth: 1)
+            )
         }
     }
 }
@@ -96,27 +161,47 @@ struct PlantCard: View {
     @EnvironmentObject var dataManager: DataManager
     
     var body: some View {
-        HStack(spacing: 14) {
-            ZStack { Circle().fill(AppTheme.paleGreen).frame(width: 60, height: 60); Text(plant.icon).font(.system(size: 28)) }
+        HStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(AppTheme.primaryGreen.opacity(0.15))
+                    .frame(width: 60, height: 60)
+                
+                Image(systemName: plant.icon)
+                    .font(.title2)
+                    .foregroundColor(AppTheme.primaryGreen)
+            }
+            
             VStack(alignment: .leading, spacing: 4) {
-                Text(plant.name).font(.system(size: 17, weight: .semibold)).foregroundColor(AppTheme.textPrimary)
-                Text(plant.scientificName).font(.system(size: 13)).foregroundColor(AppTheme.textSecondary).italic()
+                Text(plant.name)
+                    .font(.headline)
+                    .foregroundColor(AppTheme.textPrimary)
+                
+                Text(plant.scientificName)
+                    .font(.caption)
+                    .foregroundColor(AppTheme.textSecondary)
+                    .italic()
+                
                 HStack(spacing: 8) {
-                    Text(plant.category.rawValue).tagStyle(color: AppTheme.primaryGreen)
-                    Text(plant.careLevel.rawValue).tagStyle(color: careLevelColor)
-                }.padding(.top, 4)
+                    Label(plant.careLevel.rawValue, systemImage: "leaf")
+                        .tagStyle()
+                    
+                    Label(plant.category.rawValue, systemImage: plant.category.icon)
+                        .tagStyle()
+                }
             }
+            
             Spacer()
-            Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { dataManager.toggleFavorite(plantId: plant.id) } } label: {
-                Image(systemName: dataManager.isFavorite(plantId: plant.id) ? "heart.fill" : "heart")
-                    .font(.system(size: 20)).foregroundColor(dataManager.isFavorite(plantId: plant.id) ? AppTheme.accentPink : AppTheme.textSecondary)
+            
+            Button(action: {
+                dataManager.toggleFavorite(plant)
+            }) {
+                Image(systemName: dataManager.isFavorite(plant) ? "heart.fill" : "heart")
+                    .foregroundColor(dataManager.isFavorite(plant) ? AppTheme.accentPink : AppTheme.textSecondary)
             }
-            Image(systemName: "chevron.right").font(.system(size: 14, weight: .medium)).foregroundColor(AppTheme.textSecondary.opacity(0.5))
-        }.padding(16).cardStyle()
-    }
-    
-    private var careLevelColor: Color {
-        switch plant.careLevel { case .low: return AppTheme.primaryGreen; case .medium: return .orange; case .high: return AppTheme.accentPink }
+        }
+        .padding(16)
+        .cardStyle()
     }
 }
 
@@ -130,19 +215,61 @@ struct FilterView: View {
             Form {
                 Section("Care Level") {
                     ForEach(CareLevel.allCases, id: \.self) { level in
-                        HStack { Text(level.rawValue); Spacer(); if selectedCareLevel == level { Image(systemName: "checkmark").foregroundColor(AppTheme.primaryGreen) } }
-                            .contentShape(Rectangle()).onTapGesture { selectedCareLevel = selectedCareLevel == level ? nil : level }
+                        Button(action: {
+                            if selectedCareLevel == level {
+                                selectedCareLevel = nil
+                            } else {
+                                selectedCareLevel = level
+                            }
+                        }) {
+                            HStack {
+                                Text(level.rawValue)
+                                    .foregroundColor(AppTheme.textPrimary)
+                                Spacer()
+                                if selectedCareLevel == level {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(AppTheme.primaryGreen)
+                                }
+                            }
+                        }
                     }
                 }
+                
                 Section("Sun Requirement") {
                     ForEach(SunRequirement.allCases, id: \.self) { req in
-                        HStack { Text(req.rawValue); Spacer(); if selectedSunRequirement == req { Image(systemName: "checkmark").foregroundColor(AppTheme.primaryGreen) } }
-                            .contentShape(Rectangle()).onTapGesture { selectedSunRequirement = selectedSunRequirement == req ? nil : req }
+                        Button(action: {
+                            if selectedSunRequirement == req {
+                                selectedSunRequirement = nil
+                            } else {
+                                selectedSunRequirement = req
+                            }
+                        }) {
+                            HStack {
+                                Text(req.rawValue)
+                                    .foregroundColor(AppTheme.textPrimary)
+                                Spacer()
+                                if selectedSunRequirement == req {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(AppTheme.primaryGreen)
+                                }
+                            }
+                        }
                     }
                 }
             }
-            .navigationTitle("Filters").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .navigationBarTrailing) { Button("Done") { dismiss() }.foregroundColor(AppTheme.primaryGreen) } }
+            .navigationTitle("Filters")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
         }
+        .presentationDetents([.medium])
     }
+}
+
+#Preview {
+    CatalogView()
+        .environmentObject(DataManager())
 }

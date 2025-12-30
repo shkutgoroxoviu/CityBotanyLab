@@ -1,4 +1,4 @@
-﻿//
+//
 //  OnboardingView.swift
 //  CityBotanyLab
 //
@@ -11,72 +11,129 @@ struct OnboardingView: View {
     @State private var currentPage = 0
     
     private let pages: [OnboardingPage] = [
-        OnboardingPage(icon: "рџЊі", title: "Discover Urban Plants", description: "Explore a comprehensive catalog of trees, shrubs, and flowers perfect for city environments."),
-        OnboardingPage(icon: "рџ“‹", title: "Plan Your Green Projects", description: "Create and manage urban greening projects. Track plant selections and progress."),
-        OnboardingPage(icon: "рџ“ќ", title: "Track Your Care Activities", description: "Keep a detailed journal of all your plant care activities."),
-        OnboardingPage(icon: "рџ§®", title: "Calculate & Estimate", description: "Use built-in calculators to estimate plant quantities and watering needs."),
-        OnboardingPage(icon: "в­ђ", title: "Save Your Favorites", description: "Build your personal collection of favorite plants."),
-        OnboardingPage(icon: "рџЊї", title: "Ready to Go Green?", description: "Start exploring the world of urban botany.")
+        OnboardingPage(
+            icon: "tree.fill",
+            title: "Discover Urban Plants",
+            description: "Explore a comprehensive catalog of trees, shrubs, and flowers perfect for city environments. Find the ideal plants for any urban space."
+        ),
+        OnboardingPage(
+            icon: "folder.fill",
+            title: "Plan Your Projects",
+            description: "Create and manage landscaping projects for streets, parks, plazas, and green zones. Track plant quantities, areas, and progress."
+        ),
+        OnboardingPage(
+            icon: "book.fill",
+            title: "Keep a Care Journal",
+            description: "Document your plant care activities, observations, and maintenance schedules. Build a history of your urban greening efforts."
+        ),
+        OnboardingPage(
+            icon: "function",
+            title: "Calculate Resources",
+            description: "Estimate plant quantities for your projects based on area and spacing requirements. Plan efficiently and avoid waste."
+        ),
+        OnboardingPage(
+            icon: "heart.fill",
+            title: "Save Favorites",
+            description: "Bookmark plants you love for quick reference. Build your personal collection of go-to urban plant species."
+        ),
+        OnboardingPage(
+            icon: "leaf.fill",
+            title: "Start Growing",
+            description: "Join the urban greening movement. Transform concrete jungles into thriving green spaces, one plant at a time."
+        )
     ]
     
     var body: some View {
         ZStack {
-            AppTheme.onboardingGradient.ignoresSafeArea()
+            AppTheme.onboardingGradient
+                .ignoresSafeArea()
             
-            GeometryReader { geometry in
-                Circle().fill(AppTheme.lightGreen.opacity(0.2)).frame(width: 200, height: 200).offset(x: -50, y: -50)
-                Circle().fill(AppTheme.accentPink.opacity(0.15)).frame(width: 150, height: 150).offset(x: geometry.size.width - 80, y: 100)
-                Circle().fill(AppTheme.mintGreen.opacity(0.2)).frame(width: 180, height: 180).offset(x: geometry.size.width - 100, y: geometry.size.height - 200)
-            }
+            // Decorative circles
+            Circle()
+                .fill(AppTheme.accentPink.opacity(0.1))
+                .frame(width: 300, height: 300)
+                .blur(radius: 60)
+                .offset(x: -150, y: -300)
+            
+            Circle()
+                .fill(AppTheme.primaryGreen.opacity(0.15))
+                .frame(width: 250, height: 250)
+                .blur(radius: 50)
+                .offset(x: 150, y: 400)
             
             VStack(spacing: 0) {
+                // Skip button
                 HStack {
                     Spacer()
                     if currentPage < pages.count - 1 {
-                        Button("Skip") { withAnimation { hasSeenOnboarding = true } }
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white.opacity(0.9))
-                            .padding(.horizontal, 24).padding(.top, 16)
+                        Button("Skip") {
+                            withAnimation {
+                                hasSeenOnboarding = true
+                            }
+                        }
+                        .foregroundColor(AppTheme.textSecondary)
+                        .padding()
                     }
                 }
+                .frame(height: 50)
                 
                 TabView(selection: $currentPage) {
                     ForEach(0..<pages.count, id: \.self) { index in
-                        OnboardingPageView(page: pages[index]).tag(index)
+                        OnboardingPageView(page: pages[index])
+                            .tag(index)
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 
+                // Custom page indicator
                 HStack(spacing: 8) {
                     ForEach(0..<pages.count, id: \.self) { index in
                         Capsule()
-                            .fill(currentPage == index ? AppTheme.accentPink : Color.white.opacity(0.4))
-                            .frame(width: currentPage == index ? 24 : 8, height: 8)
+                            .fill(index == currentPage ? AppTheme.primaryGreen : AppTheme.textSecondary.opacity(0.3))
+                            .frame(width: index == currentPage ? 24 : 8, height: 8)
+                            .animation(.easeInOut(duration: 0.3), value: currentPage)
                     }
                 }
-                .padding(.bottom, 32)
+                .padding(.vertical, 24)
                 
+                // Navigation buttons
                 VStack(spacing: 12) {
-                    Button {
-                        withAnimation {
-                            if currentPage < pages.count - 1 { currentPage += 1 }
-                            else { hasSeenOnboarding = true }
+                    Button(action: {
+                        if currentPage < pages.count - 1 {
+                            withAnimation {
+                                currentPage += 1
+                            }
+                        } else {
+                            withAnimation {
+                                hasSeenOnboarding = true
+                            }
                         }
-                    } label: {
-                        Text(currentPage < pages.count - 1 ? "Continue" : "Get Started")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(AppTheme.darkGreen)
-                            .frame(maxWidth: .infinity).padding(.vertical, 18)
-                            .background(Color.white).cornerRadius(16)
+                    }) {
+                        HStack {
+                            Text(currentPage < pages.count - 1 ? "Continue" : "Get Started")
+                                .fontWeight(.semibold)
+                            
+                            Image(systemName: currentPage < pages.count - 1 ? "arrow.right" : "checkmark")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 56)
+                        .background(AppTheme.primaryGreen)
+                        .foregroundColor(.white)
+                        .cornerRadius(16)
                     }
                     
                     if currentPage > 0 {
-                        Button { withAnimation { currentPage -= 1 } } label: {
-                            Text("Back").font(.system(size: 16, weight: .medium)).foregroundColor(.white.opacity(0.9))
-                        }.padding(.top, 8)
+                        Button("Back") {
+                            withAnimation {
+                                currentPage -= 1
+                            }
+                        }
+                        .foregroundColor(AppTheme.textSecondary)
+                        .frame(height: 44)
                     }
                 }
-                .padding(.horizontal, 32).padding(.bottom, 48)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 32)
             }
         }
     }
@@ -92,17 +149,53 @@ struct OnboardingPageView: View {
     let page: OnboardingPage
     
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 32) {
             Spacer()
-            ZStack {
-                Circle().fill(Color.white.opacity(0.15)).frame(width: 180, height: 180)
-                Circle().fill(Color.white.opacity(0.2)).frame(width: 140, height: 140)
-                Text(page.icon).font(.system(size: 80))
-            }.padding(.bottom, 20)
             
-            Text(page.title).font(.system(size: 28, weight: .bold)).foregroundColor(.white).multilineTextAlignment(.center).padding(.horizontal, 32)
-            Text(page.description).font(.system(size: 17)).foregroundColor(.white.opacity(0.9)).multilineTextAlignment(.center).lineSpacing(4).padding(.horizontal, 40)
-            Spacer(); Spacer()
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [AppTheme.primaryGreen.opacity(0.2), AppTheme.accentPink.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 180, height: 180)
+                
+                Image(systemName: page.icon)
+                    .font(.system(size: 70))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [AppTheme.primaryGreen, AppTheme.accentPink],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            
+            VStack(spacing: 16) {
+                Text(page.title)
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundColor(AppTheme.textPrimary)
+                    .multilineTextAlignment(.center)
+                
+                Text(page.description)
+                    .font(.body)
+                    .foregroundColor(AppTheme.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(4)
+                    .padding(.horizontal, 32)
+            }
+            
+            Spacer()
+            Spacer()
         }
     }
+}
+
+#Preview {
+    OnboardingView(hasSeenOnboarding: .constant(false))
+        .environmentObject(DataManager())
 }

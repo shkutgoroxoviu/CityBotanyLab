@@ -1,4 +1,4 @@
-﻿//
+//
 //  Project.swift
 //  CityBotanyLab
 //
@@ -20,14 +20,13 @@ struct Project: Identifiable, Codable {
     init(
         id: UUID = UUID(),
         name: String,
-        projectDescription: String = "",
-        locationType: UrbanLocation = .park,
-        area: Double = 0,
-        plants: [ProjectPlant] = [],
-        createdDate: Date = Date(),
-        targetCompletionDate: Date? = nil,
-        status: ProjectStatus = .planning,
-        notes: String = ""
+        projectDescription: String,
+        locationType: UrbanLocation,
+        area: Double,
+        plants: [ProjectPlant],
+        targetCompletionDate: Date?,
+        status: ProjectStatus,
+        notes: String
     ) {
         self.id = id
         self.name = name
@@ -35,7 +34,7 @@ struct Project: Identifiable, Codable {
         self.locationType = locationType
         self.area = area
         self.plants = plants
-        self.createdDate = createdDate
+        self.createdDate = Date()
         self.targetCompletionDate = targetCompletionDate
         self.status = status
         self.notes = notes
@@ -45,25 +44,12 @@ struct Project: Identifiable, Codable {
 struct ProjectPlant: Identifiable, Codable {
     let id: UUID
     let plantId: UUID
-    let plantName: String
     var quantity: Int
-    var isPlanted: Bool
-    var plantedDate: Date?
     
-    init(
-        id: UUID = UUID(),
-        plantId: UUID,
-        plantName: String,
-        quantity: Int = 1,
-        isPlanted: Bool = false,
-        plantedDate: Date? = nil
-    ) {
+    init(id: UUID = UUID(), plantId: UUID, quantity: Int) {
         self.id = id
         self.plantId = plantId
-        self.plantName = plantName
         self.quantity = quantity
-        self.isPlanted = isPlanted
-        self.plantedDate = plantedDate
     }
 }
 
@@ -72,13 +58,4 @@ enum ProjectStatus: String, Codable, CaseIterable {
     case inProgress = "In Progress"
     case completed = "Completed"
     case onHold = "On Hold"
-    
-    var icon: String {
-        switch self {
-        case .planning: return "рџ“‹"
-        case .inProgress: return "рџ”§"
-        case .completed: return "вњ…"
-        case .onHold: return "вЏёпёЏ"
-        }
-    }
 }
